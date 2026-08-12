@@ -2,13 +2,19 @@
 APP.PY
 -------
 Ye web server hai - website (frontend) isi se baat karti hai.
+Ye Render (Linux) par chalta hai - is liye ismein MetaTrader5 ki
+zarurat nahi (wo sirf Windows par chalti hai). Asal trading wala kaam
+alag se "windows-worker" folder mein hai, jo Windows laptop/VPS par chalega.
+
+Endpoints:
+  POST /api/connect-mt5   -> user apna MT5 login/password/server bhejta hai, Firebase mein save hota hai
+  GET  /api/status        -> bot zinda hai ya nahi, check karne ke liye
 """
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from firebase_client import get_active_users, save_user_mt5_details
-from mt5_engine import run_for_user
+from firebase_client import save_user_mt5_details
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +27,17 @@ def status():
 
 @app.route("/api/connect-mt5", methods=["POST"])
 def connect_mt5():
+    """
+    Website se aayega jab user apna MT5 add kare. Body (JSON):
+    {
+      "user_id": "firebase-user-ka-id",
+      "mt5_login": 12345678,
+      "mt5_password": "xxxx",
+      "mt5_server": "Exness-MT5Trial7",
+      "symbol": "EURUSD",
+      "risk_percent": 1.0
+    }
+    """
     data = request.get_json()
     required = ["user_id", "mt5_login", "mt5_password", "mt5_server"]
     missing = [f for f in required if f not in data]
@@ -36,19 +53,6 @@ def connect_mt5():
         risk_percent=data.get("risk_percent", 1.0),
     )
     return jsonify({"message": "MT5 account jorh diya gaya"})
-
-
-@app.route("/api/run-cycle", methods=["POST"])
-def run_cycle():
-    users = get_active_users()
-    results = []
-    for user in users:
-        try:
-            result = run_for_user(user)
-        except Exception as e:
-            result = {"user_id": user.get("user_id"), "status": "error", "error": str(e)}
-        results.append(result)
-    return jsonify({"processed": len(results), "results": results})
 
 
 if __name__ == "__main__":
