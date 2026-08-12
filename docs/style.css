@@ -13,10 +13,7 @@ body {
   padding: 20px;
 }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-}
+.container { width: 100%; max-width: 440px; }
 
 .card {
   background: #ffffff;
@@ -25,25 +22,13 @@ body {
   box-shadow: 0 20px 50px rgba(0,0,0,0.25);
 }
 
-h1 {
-  color: #2d2a4a;
-  margin: 0 0 4px 0;
-  font-size: 26px;
-  font-weight: 700;
-}
+h1 { color: #2d2a4a; margin: 0 0 4px 0; font-size: 24px; font-weight: 700; }
 
-.subtitle {
-  color: #8b87a8;
-  margin: 0 0 22px 0;
-  font-size: 14px;
-}
+.subtitle { color: #8b87a8; margin: 0 0 20px 0; font-size: 14px; line-height: 1.5; }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+
+.user-email { color: #8b87a8; font-size: 12px; margin: 2px 0 0 0; }
 
 input {
   width: 100%;
@@ -54,18 +39,10 @@ input {
   background: #faf9ff;
   color: #2d2a4a;
   font-size: 15px;
-  transition: border-color 0.2s;
 }
 
-input:focus {
-  outline: none;
-  border-color: #764ba2;
-  background: #ffffff;
-}
-
-input::placeholder {
-  color: #b3aecf;
-}
+input:focus { outline: none; border-color: #764ba2; background: #ffffff; }
+input::placeholder { color: #b3aecf; }
 
 button {
   width: 100%;
@@ -78,13 +55,10 @@ button {
   font-size: 15px;
   margin-bottom: 12px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
   box-shadow: 0 6px 16px rgba(118, 75, 162, 0.35);
 }
 
-button:active {
-  transform: scale(0.98);
-}
+button:active { transform: scale(0.98); }
 
 button.secondary {
   background: transparent;
@@ -95,37 +69,75 @@ button.secondary {
 
 button.small {
   width: auto;
-  padding: 9px 16px;
+  padding: 8px 14px;
   font-size: 13px;
   background: #f0eef9;
   color: #764ba2;
   box-shadow: none;
+  margin-bottom: 0;
 }
 
-.risk-label {
-  color: #6b6789;
-  font-size: 13px;
-  display: block;
-  margin-bottom: 8px;
-  margin-top: 4px;
+button.logout-alt { width: 100%; margin-top: 4px; }
+
+.risk-label { color: #6b6789; font-size: 13px; display: block; margin-bottom: 8px; margin-top: 4px; }
+input[type="range"] { padding: 0; margin-bottom: 8px; accent-color: #764ba2; }
+
+.error { color: #ef4b6f; font-size: 13px; text-align: center; margin-top: 4px; }
+#connect-message, #verify-message { color: #22b07d; font-size: 13px; text-align: center; margin-top: 8px; }
+
+.status-box {
+  background: #faf9ff;
+  border: 2px solid #f0eef9;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
-input[type="range"] {
-  padding: 0;
+.status-box.connected { border-color: #22b07d; background: #f0fdf6; }
+.status-box p { margin: 4px 0; font-size: 14px; color: #4b4768; }
+.status-box .status-title { font-weight: 700; color: #2d2a4a; font-size: 15px; }
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #22b07d;
+  color: white;
+}
+
+.mt5-form-details {
   margin-bottom: 18px;
-  accent-color: #764ba2;
+  border: 2px solid #f0eef9;
+  border-radius: 14px;
+  padding: 12px 16px;
 }
 
-.error {
-  color: #ef4b6f;
-  font-size: 13px;
-  text-align: center;
-  margin-top: 4px;
+.mt5-form-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #764ba2;
+  font-size: 14px;
+  padding: 4px 0;
 }
 
-#connect-message {
-  color: #22b07d;
+.form-inner { margin-top: 14px; }
+
+.section-title { color: #2d2a4a; font-size: 16px; margin: 0 0 12px 0; }
+
+.empty-note { color: #b3aecf; font-size: 13px; text-align: center; padding: 20px 0; }
+
+.trade-item {
+  background: #faf9ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
   font-size: 13px;
-  text-align: center;
-  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  color: #4b4768;
 }
+
+.trade-item .trade-signal { font-weight: 700; }
+.trade-item .trade-signal.buy { color: #22b07d; }
+.trade-item .trade-signal.sell { color: #ef4b6f; }
