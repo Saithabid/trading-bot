@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trading Bot Dashboard</title>
 <link rel="stylesheet" href="style.css">
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
@@ -13,12 +12,13 @@
 
 <div class="container">
 
+  <!-- LOGIN / SIGNUP -->
   <div id="auth-screen" class="card">
-    <h1>Trading Bot</h1>
+    <h1>🤖 Trading Bot</h1>
     <p class="subtitle">Login ya account banayein</p>
 
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <input type="email" id="email" placeholder="Real email likhein (jaise Gmail)">
+    <input type="password" id="password" placeholder="Password (6+ characters)">
 
     <button onclick="login()">Login</button>
     <button onclick="signup()" class="secondary">Naya Account Banayein</button>
@@ -26,26 +26,55 @@
     <p id="auth-error" class="error"></p>
   </div>
 
+  <!-- EMAIL VERIFY KARNA HAI -->
+  <div id="verify-screen" class="card" style="display:none;">
+    <h1>📧 Email Verify Karein</h1>
+    <p class="subtitle">Humne <b id="verify-email-text"></b> par ek link bheja hai. Apna inbox (ya spam folder) check karein aur link par tap karein.</p>
+
+    <button onclick="checkVerified()">Maine Verify Kar Liya - Check Karein</button>
+    <button onclick="resendVerification()" class="secondary">Dobara Email Bhejein</button>
+    <button onclick="logout()" class="small logout-alt">Logout</button>
+
+    <p id="verify-message"></p>
+  </div>
+
+  <!-- DASHBOARD -->
   <div id="dashboard-screen" class="card" style="display:none;">
     <div class="header">
-      <h1>Dashboard</h1>
+      <div>
+        <h1>Dashboard</h1>
+        <p class="user-email" id="user-email-display"></p>
+      </div>
       <button onclick="logout()" class="small">Logout</button>
     </div>
 
-    <p class="subtitle">Apna MT5 account jorein</p>
+    <!-- MT5 STATUS CARD -->
+    <div id="mt5-status-box" class="status-box">
+      <p>Loading...</p>
+    </div>
 
-    <input type="number" id="mt5_login" placeholder="MT5 Login (account number)">
-    <input type="password" id="mt5_password" placeholder="MT5 Password">
-    <input type="text" id="mt5_server" placeholder="MT5 Server (jaise Exness-MT5Trial7)">
-    <input type="text" id="symbol" placeholder="Symbol (jaise EURUSD)" value="EURUSD">
+    <details class="mt5-form-details">
+      <summary>MT5 Account Add/Update Karein</summary>
+      <div class="form-inner">
+        <input type="number" id="mt5_login" placeholder="MT5 Login (account number)">
+        <input type="password" id="mt5_password" placeholder="MT5 Password">
+        <input type="text" id="mt5_server" placeholder="MT5 Server (jaise Exness-MT5Trial7)">
+        <input type="text" id="symbol" placeholder="Symbol (jaise XAUUSD)" value="XAUUSD">
 
-    <label class="risk-label">Risk % per trade: <span id="risk-value">1.0</span>%</label>
-    <input type="range" id="risk_percent" min="0.5" max="5" step="0.5" value="1.0"
-           oninput="document.getElementById('risk-value').innerText = this.value">
+        <label class="risk-label">Risk % per trade: <span id="risk-value">1.0</span>%</label>
+        <input type="range" id="risk_percent" min="0.5" max="5" step="0.5" value="1.0"
+               oninput="document.getElementById('risk-value').innerText = this.value">
 
-    <button onclick="connectMT5()">MT5 Jorein</button>
+        <button onclick="connectMT5()">MT5 Jorein / Update Karein</button>
+        <p id="connect-message"></p>
+      </div>
+    </details>
 
-    <p id="connect-message"></p>
+    <!-- TRADES LIST -->
+    <h2 class="section-title">📊 Trades</h2>
+    <div id="trades-list">
+      <p class="empty-note">Abhi tak koi trade nahi hui.</p>
+    </div>
   </div>
 
 </div>
