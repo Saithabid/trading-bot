@@ -1,84 +1,99 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trading Bot Dashboard</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Trading Bot Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <div class="app-container">
+        <header class="top-nav">
+            <div class="logo">
+                <i class="fa-solid me-2 fa-chart-line"></i> EXNESS <span>CLOUD BOT</span>
+            </div>
+            <div class="user-status">
+                <span class="status-indicator" id="statusDot"></span>
+                <span id="statusText">Disconnected</span>
+            </div>
+        </header>
 
-<div class="container">
+        <main class="dashboard-grid">
+            
+            <section class="card account-card">
+                <h3><i class="fa-solid fa-link"></i> MT5 Account Connect</h3>
+                <form id="connectForm">
+                    <div class="input-group">
+                        <label>MT5 Login ID</label>
+                        <input type="text" id="mt5_login" placeholder="e.g. 12345678" required>
+                    </div>
+                    <div class="input-group">
+                        <label>MT5 Password</label>
+                        <input type="password" id="mt5_password" placeholder="••••••••" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Exness Server</label>
+                        <input type="text" id="mt5_server" placeholder="Exness-MT5Real10" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Symbol</label>
+                            <select id="symbol">
+                                <option value="XAUUSD">XAUUSD (Gold)</option>
+                                <option value="EURUSD">EURUSD</option>
+                                <option value="GBPUSD">GBPUSD</option>
+                                <option value="BTCUSD">BTCUSD</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Risk %</label>
+                            <input type="number" id="risk_percent" value="1.0" step="0.1" min="0.1" max="10">
+                        </div>
+                    </div>
+                    <button type="submit" id="btnConnect" class="btn-primary">
+                        <i class="fa-solid fa-plug"></i> Connect & Start Auto-Trade
+                    </button>
+                </form>
+            </section>
 
-  <!-- LOGIN / SIGNUP -->
-  <div id="auth-screen" class="card">
-    <h1>🤖 Trading Bot</h1>
-    <p class="subtitle">Login ya account banayein</p>
+            <section class="card chart-card">
+                <h3><i class="fa-solid fa-chart-area"></i> Live Market Chart</h3>
+                <div id="tradingview_chart" class="chart-container"></div>
+            </section>
 
-    <input type="email" id="email" placeholder="Real email likhein (jaise Gmail)">
-    <input type="password" id="password" placeholder="Password (6+ characters)">
+            <section class="card trades-card">
+                <div class="table-header">
+                    <h3><i class="fa-solid fa-list-check"></i> Live Auto Trades & Signals</h3>
+                    <button id="btnRefresh" class="btn-secondary"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Lot Size</th>
+                                <th>Entry Price</th>
+                                <th>S/L</th>
+                                <th>T/P</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesTableBody">
+                            <tr>
+                                <td colspan="8" class="no-data">Koi active trade nahi hai. Form fill karke account connect karein.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-    <button onclick="login()">Login</button>
-    <button onclick="signup()" class="secondary">Naya Account Banayein</button>
-
-    <p id="auth-error" class="error"></p>
-  </div>
-
-  <!-- EMAIL VERIFY KARNA HAI -->
-  <div id="verify-screen" class="card" style="display:none;">
-    <h1>📧 Email Verify Karein</h1>
-    <p class="subtitle">Humne <b id="verify-email-text"></b> par ek link bheja hai. Apna inbox (ya spam folder) check karein aur link par tap karein.</p>
-
-    <button onclick="checkVerified()">Maine Verify Kar Liya - Check Karein</button>
-    <button onclick="resendVerification()" class="secondary">Dobara Email Bhejein</button>
-    <button onclick="logout()" class="small logout-alt">Logout</button>
-
-    <p id="verify-message"></p>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard-screen" class="card" style="display:none;">
-    <div class="header">
-      <div>
-        <h1>Dashboard</h1>
-        <p class="user-email" id="user-email-display"></p>
-      </div>
-      <button onclick="logout()" class="small">Logout</button>
+        </main>
     </div>
 
-    <!-- MT5 STATUS CARD -->
-    <div id="mt5-status-box" class="status-box">
-      <p>Loading...</p>
-    </div>
-
-    <details class="mt5-form-details">
-      <summary>MT5 Account Add/Update Karein</summary>
-      <div class="form-inner">
-        <input type="number" id="mt5_login" placeholder="MT5 Login (account number)">
-        <input type="password" id="mt5_password" placeholder="MT5 Password">
-        <input type="text" id="mt5_server" placeholder="MT5 Server (jaise Exness-MT5Trial7)">
-        <input type="text" id="symbol" placeholder="Symbol (jaise XAUUSD)" value="XAUUSD">
-
-        <label class="risk-label">Risk % per trade: <span id="risk-value">1.0</span>%</label>
-        <input type="range" id="risk_percent" min="0.5" max="5" step="0.5" value="1.0"
-               oninput="document.getElementById('risk-value').innerText = this.value">
-
-        <button onclick="connectMT5()">MT5 Jorein / Update Karein</button>
-        <p id="connect-message"></p>
-      </div>
-    </details>
-
-    <!-- TRADES LIST -->
-    <h2 class="section-title">📊 Trades</h2>
-    <div id="trades-list">
-      <p class="empty-note">Abhi tak koi trade nahi hui.</p>
-    </div>
-  </div>
-
-</div>
-
-<script src="app.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
