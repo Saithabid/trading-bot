@@ -42,7 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         statusText.innerText = "Connecting...";
         
         try {
-            const response = await fetch("/api/connect-mt5", {
+            const response = await fetch("https://trading-bot-se76.onrender.com/api/connect-mt5", {
+
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
