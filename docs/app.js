@@ -1,67 +1,36 @@
-document.addEventListener("DOMContentLoaded", () => {
-    loadTradingViewChart("XAUUSD");
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import firebase_client
 
-    const connectForm = document.getElementById("connectForm");
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
+app = Flask(__name__)
 
-    // Live Chart Render Function
-    function loadTradingViewChart(symbol) {
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "OANDA:" + symbol,
-            "interval": "15",
-            "timezone": "Etc/UTC",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_side_toolbar": false,
-            "container_id": "tradingview_chart"
-        });
-    }
+# GitHub Pages se har kism ki request allow karne ke liye:
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    // Symbol change event
-    document.getElementById("symbol").addEventListener("change", (e) => {
-        loadTradingViewChart(e.target.value);
-    });
+@app.route('/api/status', methods=['GET'])
+def status():
+    return jsonify({"status": "running", "message": "Bot is alive"}), 200
 
-    // Account Submit Handler
-    connectForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+@app.route('/api/connect-mt5', methods=['POST', 'OPTIONS'])
+def connect_mt5():
+    # Browser preflight check handle karne ke liye
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
 
-        const payload = {
-            mt5_login: document.getElementById("mt5_login").value,
-            mt5_password: document.getElementById("mt5_password").value,
-            mt5_server: document.getElementById("mt5_server").value,
-            symbol: document.getElementById("symbol").value,
-            risk_percent: document.getElementById("risk_percent").value
-        };
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"success": False, "error": "Data receive nahi hua"}), 400
 
-        statusText.innerText = "Connecting...";
-        
-        try {
-            const response = await fetch("https://trading-bot-se76.onrender.com/api/connect-mt5", {
+        # Firebase mein save karein
+        if hasattr(firebase_client, 'save_user_credentials'):
+            firebase_client.save_user_credentials(data)
 
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+        return jsonify({"success": True, "message": "Account Connected!"}), 200
 
-            const result = await response.json();
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
-            if (result.success) {
-                statusDot.classList.add("active");
-                statusText.innerText = "Connected & Active";
-                alert("Account Connect ho gaya hai! Auto Trading active hai.");
-            } else {
-                statusText.innerText = "Connection Failed";
-                alert("Error: " + result.error);
-            }
-        } catch (err) {
-            console.error(err);
-            statusText.innerText = "Server Error";
-        }
-    });
-});
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
