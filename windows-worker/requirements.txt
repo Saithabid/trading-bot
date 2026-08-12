@@ -1,4 +1,7 @@
-MetaTrader5==5.0.45
+metaapi-cloud-sdk>=28.0.0
+flask==3.0.0
+flask-cors==4.0.0
+firebase-admin==6.5.0
 pandas==2.2.2
 numpy==1.26.4
-firebase-admin==6.5.0
+gunicorn>=21.2.0
