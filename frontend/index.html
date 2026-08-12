@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Bot Dashboard</title>
+<link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <div id="auth-screen" class="card">
+    <h1>Trading Bot</h1>
+    <p class="subtitle">Login ya account banayein</p>
+
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+    <button onclick="signup()" class="secondary">Naya Account Banayein</button>
+
+    <p id="auth-error" class="error"></p>
+  </div>
+
+  <div id="dashboard-screen" class="card" style="display:none;">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <button onclick="logout()" class="small">Logout</button>
+    </div>
+
+    <p class="subtitle">Apna MT5 account jorein</p>
+
+    <input type="number" id="mt5_login" placeholder="MT5 Login (account number)">
+    <input type="password" id="mt5_password" placeholder="MT5 Password">
+    <input type="text" id="mt5_server" placeholder="MT5 Server (jaise Exness-MT5Trial7)">
+    <input type="text" id="symbol" placeholder="Symbol (jaise EURUSD)" value="EURUSD">
+
+    <label class="risk-label">Risk % per trade: <span id="risk-value">1.0</span>%</label>
+    <input type="range" id="risk_percent" min="0.5" max="5" step="0.5" value="1.0"
+           oninput="document.getElementById('risk-value').innerText = this.value">
+
+    <button onclick="connectMT5()">MT5 Jorein</button>
+
+    <p id="connect-message"></p>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
