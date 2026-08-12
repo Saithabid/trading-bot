@@ -1,8 +1,8 @@
 const firebaseConfig = {
-  apiKey: "YAHAN_APNI_API_KEY_DALEIN",
-  authDomain: "YAHAN_APNA_PROJECT.firebaseapp.com",
-  projectId: "YAHAN_APNA_PROJECT_ID",
-  appId: "YAHAN_APNA_APP_ID"
+  apiKey: "AIzaSyDxMYG9Colp9lyF39hTlHMzZsVEhByB0i0",
+  authDomain: "trading-bot-c8725.firebaseapp.com",
+  projectId: "trading-bot-c8725",
+  appId: "1:390734533806:web:656cb940ff6c0d496c493f"
 };
 
 const BACKEND_URL = "https://trading-bot-se75.onrender.com";
