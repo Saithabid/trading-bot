@@ -7,20 +7,14 @@ Ye Render (Linux) par chalta hai - MetaTrader5 ki zarurat nahi is file mein.
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from firebase_client import save_user_mt5_details, get_user_status, get_user_trades, get_active_users
+from firebase_client import save_user_mt5_details, get_user_status, get_user_trades, get_active_users, disconnect_user_mt5
 from metaapi_engine import run_for_user
-
 app = Flask(__name__)
 CORS(app)
-
 CRON_SECRET = os.environ.get("CRON_SECRET")
-
-
 @app.route("/api/status", methods=["GET"])
 def status():
     return jsonify({"status": "bot zinda hai"})
-
-
 @app.route("/api/connect-mt5", methods=["POST"])
 def connect_mt5():
     data = request.get_json()
@@ -37,8 +31,14 @@ def connect_mt5():
         risk_percent=data.get("risk_percent", 1.0),
     )
     return jsonify({"message": "MT5 account jorh diya gaya"})
-
-
+@app.route("/api/disconnect-mt5", methods=["POST"])
+def disconnect_mt5():
+    data = request.get_json()
+    user_id = data.get("user_id") if data else None
+    if not user_id:
+        return jsonify({"error": "user_id chahiye"}), 400
+    disconnect_user_mt5(user_id)
+    return jsonify({"message": "MT5 account disconnect ho gaya, auto-trading ruk gayi hai"})
 @app.route("/api/user-status", methods=["GET"])
 def user_status():
     user_id = request.args.get("user_id")
@@ -46,8 +46,6 @@ def user_status():
         return jsonify({"error": "user_id chahiye"}), 400
     status_data = get_user_status(user_id)
     return jsonify(status_data)
-
-
 @app.route("/api/trades", methods=["GET"])
 def trades():
     user_id = request.args.get("user_id")
@@ -55,8 +53,6 @@ def trades():
         return jsonify({"error": "user_id chahiye"}), 400
     trades_data = get_user_trades(user_id)
     return jsonify({"trades": trades_data})
-
-
 @app.route("/api/run-cycle", methods=["POST"])
 def run_cycle():
     """
@@ -66,7 +62,6 @@ def run_cycle():
     """
     if request.headers.get("X-Cron-Secret") != CRON_SECRET:
         return jsonify({"error": "unauthorized"}), 403
-
     users = get_active_users()
     results = []
     for user in users:
@@ -76,9 +71,6 @@ def run_cycle():
             results.append({"login": login_id, "result": result})
         except Exception as e:
             results.append({"login": login_id, "error": str(e)})
-
     return jsonify({"checked": len(users), "results": results})
-
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
