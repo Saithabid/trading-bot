@@ -6,21 +6,58 @@
     <title>Cloud Trading Bot Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <div class="app-container">
+
+    <!-- ============ LOGIN / SIGNUP SCREEN ============ -->
+    <div id="auth-screen" class="auth-wrapper">
+        <div class="card">
+            <h1><i class="fa-solid fa-chart-line"></i> EXNESS CLOUD BOT</h1>
+            <p class="subtitle">Login ya account banayein</p>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Real email likhein (jaise Gmail)">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Password (6+ characters)">
+            </div>
+            <button onclick="login()" class="btn-primary">Login</button>
+            <button onclick="signup()" class="btn-secondary-full">Naya Account Banayein</button>
+            <p id="auth-error" class="error"></p>
+        </div>
+    </div>
+
+    <!-- ============ EMAIL VERIFY SCREEN ============ -->
+    <div id="verify-screen" class="auth-wrapper" style="display:none;">
+        <div class="card">
+            <h1><i class="fa-solid fa-envelope"></i> Email Verify Karein</h1>
+            <p class="subtitle">Humne <b id="verify-email-text"></b> par ek link bheja hai. Apna inbox (ya spam folder) check karein aur link par tap karein.</p>
+            <button onclick="checkVerified()" class="btn-primary">Maine Verify Kar Liya - Check Karein</button>
+            <button onclick="resendVerification()" class="btn-secondary-full">Dobara Email Bhejein</button>
+            <button onclick="logout()" class="btn-secondary-full logout-alt">Logout</button>
+            <p id="verify-message" class="error"></p>
+        </div>
+    </div>
+
+    <!-- ============ DASHBOARD SCREEN ============ -->
+    <div id="dashboard-screen" class="app-container" style="display:none;">
         <header class="top-nav">
             <div class="logo">
                 <i class="fa-solid me-2 fa-chart-line"></i> EXNESS <span>CLOUD BOT</span>
             </div>
             <div class="user-status">
+                <span id="user-email-display" class="user-email-badge"></span>
                 <span class="status-indicator" id="statusDot"></span>
                 <span id="statusText">Disconnected</span>
+                <button onclick="logout()" class="btn-secondary">Logout</button>
             </div>
         </header>
 
         <main class="dashboard-grid">
-            
+
             <section class="card account-card">
                 <h3><i class="fa-solid fa-link"></i> MT5 Account Connect</h3>
                 <form id="connectForm">
@@ -54,6 +91,7 @@
                     <button type="submit" id="btnConnect" class="btn-primary">
                         <i class="fa-solid fa-plug"></i> Connect & Start Auto-Trade
                     </button>
+                    <p id="connect-message" class="error"></p>
                 </form>
             </section>
 
