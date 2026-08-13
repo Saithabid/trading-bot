@@ -16,31 +16,35 @@ document.addEventListener("DOMContentLoaded", () => {
             "container_id": "tradingview_chart"
         });
     }
-
     // 2. Default Chart Load Karein (Gold)
     loadTradingViewChart("XAUUSD");
-
     const connectForm = document.getElementById("connectForm");
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
-
     // 3. Jab User Coin Change Kare Toh Chart Update Ho
     document.getElementById("symbol").addEventListener("change", (e) => {
         loadTradingViewChart(e.target.value);
     });
-
     // 4. Form Submit Handler (Aapka Render URL Yahan Hai)
     connectForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // Logged-in Firebase user ka UID lena zaroori hai, backend ko user_id chahiye
+        const currentUser = firebase.auth().currentUser;
+        if (!currentUser) {
+            statusText.innerText = "Not Logged In";
+            alert("Pehle login karein, phir MT5 account connect karein.");
+            return;
+        }
+
         const payload = {
+            user_id: currentUser.uid,
             mt5_login: document.getElementById("mt5_login").value,
             mt5_password: document.getElementById("mt5_password").value,
             mt5_server: document.getElementById("mt5_server").value,
             symbol: document.getElementById("symbol").value,
             risk_percent: document.getElementById("risk_percent").value
         };
-
         statusText.innerText = "Connecting...";
         
         try {
@@ -50,9 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-
             const result = await response.json();
-
             if (result.success) {
                 statusDot.classList.add("active");
                 statusText.innerText = "Connected & Active";
