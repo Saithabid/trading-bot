@@ -170,13 +170,15 @@ async function connectMT5() {
         });
         const result = await response.json();
 
-        if (response.ok && result.success) {
+        if (response.ok) {
             statusDot.classList.add("active");
             statusText.innerText = "Connected & Active";
-            connectMsg.innerText = "Account Connect ho gaya hai! Auto Trading active hai.";
+            connectMsg.style.color = "#00c853";
+            connectMsg.innerText = result.message || "Account Connect ho gaya hai! Auto Trading active hai.";
         } else {
             statusText.innerText = "Connection Failed";
-            connectMsg.innerText = "Error: " + JSON.stringify(result.error || result);
+            connectMsg.style.color = "#ff5252";
+            connectMsg.innerText = "Error: " + (result.error || "Unknown error");
         }
     } catch (err) {
         console.error("Fetch Error:", err);
