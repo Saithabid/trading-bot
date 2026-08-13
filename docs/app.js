@@ -52,6 +52,7 @@ function signup() {
 }
 
 function logout() {
+    stopTradesPolling();
     firebase.auth().signOut();
 }
 
@@ -119,6 +120,62 @@ function initDashboard(user) {
         e.preventDefault();
         await connectMT5();
     });
+
+    document.getElementById("btnRefresh").addEventListener("click", () => {
+        fetchTrades(user.uid);
+    });
+
+    startTradesPolling(user.uid);
+}
+
+// ================= LIVE TRADES POLLING (new, does not affect login/connect) =================
+let tradesPollTimer = null;
+
+function startTradesPolling(userId) {
+    fetchTrades(userId);
+    if (tradesPollTimer) clearInterval(tradesPollTimer);
+    tradesPollTimer = setInterval(() => fetchTrades(userId), 20000);
+}
+
+function stopTradesPolling() {
+    if (tradesPollTimer) {
+        clearInterval(tradesPollTimer);
+        tradesPollTimer = null;
+    }
+}
+
+async function fetchTrades(userId) {
+    try {
+        const res = await fetch(BACKEND_URL + "/api/trades?user_id=" + encodeURIComponent(userId));
+        if (!res.ok) return;
+        const data = await res.json();
+        renderTrades(data.trades || []);
+    } catch (err) {
+        console.error("Trades fetch error:", err);
+    }
+}
+
+function renderTrades(trades) {
+    const tbody = document.getElementById("tradesTableBody");
+    if (!trades || trades.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="no-data">Koi active trade nahi hai. Form fill karke account connect karein.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = trades.map((t) => {
+        const type = (t.type || t.side || "-").toString();
+        const typeClass = type.toUpperCase() === "BUY" ? "badge-buy" : (type.toUpperCase() === "SELL" ? "badge-sell" : "");
+        return "<tr>" +
+            "<td>" + (t.time || t.timestamp || "-") + "</td>" +
+            "<td>" + (t.symbol || "-") + "</td>" +
+            "<td class='" + typeClass + "'>" + type + "</td>" +
+            "<td>" + (t.lot_size || t.lot || "-") + "</td>" +
+            "<td>" + (t.entry_price || t.price || "-") + "</td>" +
+            "<td>" + (t.sl || t.stop_loss || "-") + "</td>" +
+            "<td>" + (t.tp || t.take_profit || "-") + "</td>" +
+            "<td>" + (t.status || "-") + "</td>" +
+            "</tr>";
+    }).join("");
 }
 
 function loadTradingViewChart(symbol) {
