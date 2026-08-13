@@ -4,14 +4,16 @@ APP.PY
 Ye web server hai - website (frontend) isi se baat karti hai.
 Ye Render (Linux) par chalta hai - MetaTrader5 ki zarurat nahi is file mein.
 """
-
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
-from firebase_client import save_user_mt5_details, get_user_status, get_user_trades
+from firebase_client import save_user_mt5_details, get_user_status, get_user_trades, get_active_users
+from metaapi_engine import run_for_user
 
 app = Flask(__name__)
 CORS(app)
+
+CRON_SECRET = os.environ.get("CRON_SECRET")
 
 
 @app.route("/api/status", methods=["GET"])
@@ -26,7 +28,6 @@ def connect_mt5():
     missing = [f for f in required if f not in data]
     if missing:
         return jsonify({"error": f"Ye fields chahiye: {missing}"}), 400
-
     save_user_mt5_details(
         user_id=data["user_id"],
         mt5_login=data["mt5_login"],
@@ -54,6 +55,29 @@ def trades():
         return jsonify({"error": "user_id chahiye"}), 400
     trades_data = get_user_trades(user_id)
     return jsonify({"trades": trades_data})
+
+
+@app.route("/api/run-cycle", methods=["POST"])
+def run_cycle():
+    """
+    Ye endpoint GitHub Actions (free scheduler) se har 15 minute call hoga.
+    Free Render worker na hone ki wajah se, trading cycle isi web service
+    ke andar chalta hai jab ye endpoint hit hota hai.
+    """
+    if request.headers.get("X-Cron-Secret") != CRON_SECRET:
+        return jsonify({"error": "unauthorized"}), 403
+
+    users = get_active_users()
+    results = []
+    for user in users:
+        login_id = user.get("mt5_login", "Unknown")
+        try:
+            result = run_for_user(user, signal_type="BUY")
+            results.append({"login": login_id, "result": result})
+        except Exception as e:
+            results.append({"login": login_id, "error": str(e)})
+
+    return jsonify({"checked": len(users), "results": results})
 
 
 if __name__ == "__main__":
