@@ -1,0 +1,15 @@
+name: Trigger Trading Cycle
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call bot cycle endpoint
+        run: |
+          curl -X POST https://trading-bot-se75.onrender.com/api/run-cycle \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}"
