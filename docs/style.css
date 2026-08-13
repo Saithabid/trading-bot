@@ -4,19 +4,16 @@
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 body {
     background-color: #0b0e14;
     color: #e1e3e6;
     min-height: 100vh;
 }
-
 .app-container {
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
 }
-
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -27,49 +24,46 @@ body {
     border: 1px solid #232834;
     margin-bottom: 20px;
 }
-
 .logo {
     font-size: 1.2rem;
     font-weight: 700;
     color: #00f2fe;
 }
-
 .logo span {
     color: #fff;
 }
-
 .user-status {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.9rem;
 }
-
+.user-email-badge {
+    color: #8f96a3;
+    font-size: 0.8rem;
+    margin-right: 6px;
+}
 .status-indicator {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     background-color: #ff5252;
 }
-
 .status-indicator.active {
     background-color: #00c853;
     box-shadow: 0 0 8px #00c853;
 }
-
 .dashboard-grid {
     display: grid;
     grid-template-columns: 350px 1fr;
     gap: 20px;
 }
-
 .card {
     background: #151921;
     border-radius: 12px;
     padding: 20px;
     border: 1px solid #232834;
 }
-
 .card h3 {
     font-size: 1rem;
     margin-bottom: 15px;
@@ -78,24 +72,20 @@ body {
     align-items: center;
     gap: 8px;
 }
-
 .input-group {
     margin-bottom: 15px;
 }
-
 .input-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
-
 label {
     display: block;
     font-size: 0.8rem;
     color: #8f96a3;
     margin-bottom: 5px;
 }
-
 input, select {
     width: 100%;
     padding: 10px 12px;
@@ -105,11 +95,9 @@ input, select {
     color: #fff;
     outline: none;
 }
-
 input:focus, select:focus {
     border-color: #00f2fe;
 }
-
 .btn-primary {
     width: 100%;
     padding: 12px;
@@ -121,11 +109,9 @@ input:focus, select:focus {
     cursor: pointer;
     transition: 0.2s;
 }
-
 .btn-primary:hover {
     opacity: 0.9;
 }
-
 .btn-secondary {
     padding: 6px 12px;
     background: #232834;
@@ -134,63 +120,99 @@ input:focus, select:focus {
     border-radius: 4px;
     cursor: pointer;
 }
-
 .chart-card {
     height: 480px;
     display: flex;
     flex-direction: column;
 }
-
 .chart-container {
     flex: 1;
     width: 100%;
     border-radius: 8px;
     overflow: hidden;
 }
-
 .trades-card {
     grid-column: 1 / -1;
 }
-
 .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
 }
-
 .table-responsive {
     overflow-x: auto;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
     font-size: 0.9rem;
 }
-
 th, td {
     padding: 12px;
     border-bottom: 1px solid #232834;
 }
-
 th {
     color: #8f96a3;
     font-weight: 500;
 }
-
 .no-data {
     text-align: center;
     color: #5d6370;
     padding: 30px;
 }
-
 .badge-buy { color: #00c853; font-weight: 600; }
 .badge-sell { color: #ff5252; font-weight: 600; }
-
 @media (max-width: 900px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ============ AUTH / VERIFY SCREENS (added) ============ */
+.auth-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+.auth-wrapper .card {
+    max-width: 380px;
+    width: 100%;
+}
+.auth-wrapper h1 {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+    color: #00f2fe;
+}
+.subtitle {
+    color: #8f96a3;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+}
+.btn-secondary-full {
+    width: 100%;
+    margin-top: 10px;
+    background: #232834;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-secondary-full:hover {
+    opacity: 0.9;
+}
+.logout-alt {
+    background: transparent;
+    border: 1px solid #232834;
+}
+.error {
+    color: #ff5252;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    min-height: 18px;
 }
