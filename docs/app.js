@@ -107,6 +107,9 @@ function initDashboard(user) {
     const emailBadge = document.getElementById("user-email-display");
     if (emailBadge) emailBadge.innerText = user.email;
 
+    // Backend se asal connection status mangwao - refresh/logout se ye khatam nahi hota
+    refreshConnectionStatus(user.uid);
+
     if (dashboardInitialized) return;
     dashboardInitialized = true;
 
@@ -121,11 +124,88 @@ function initDashboard(user) {
         await connectMT5();
     });
 
+    document.getElementById("btnDisconnect").addEventListener("click", async () => {
+        await disconnectMT5();
+    });
+
     document.getElementById("btnRefresh").addEventListener("click", () => {
         fetchTrades(user.uid);
     });
 
     startTradesPolling(user.uid);
+}
+
+// ================= CONNECTION STATUS (new - survives refresh/logout) =================
+async function refreshConnectionStatus(userId) {
+    try {
+        const res = await fetch(BACKEND_URL + "/api/user-status?user_id=" + encodeURIComponent(userId));
+        if (!res.ok) return;
+        const data = await res.json();
+        applyConnectionStatus(data);
+    } catch (err) {
+        console.error("Status fetch error:", err);
+    }
+}
+
+function applyConnectionStatus(data) {
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const btnDisconnect = document.getElementById("btnDisconnect");
+    const serverInput = document.getElementById("mt5_server");
+    const symbolSelect = document.getElementById("symbol");
+    const riskInput = document.getElementById("risk_percent");
+    const loginInput = document.getElementById("mt5_login");
+    const passwordInput = document.getElementById("mt5_password");
+
+    if (data.connected && data.active) {
+        statusDot.classList.add("active");
+        statusText.innerText = "Connected & Active";
+        if (btnDisconnect) btnDisconnect.style.display = "block";
+        if (serverInput) serverInput.value = data.mt5_server || serverInput.value;
+        if (symbolSelect && data.symbol) symbolSelect.value = data.symbol;
+        if (riskInput && data.risk_percent !== undefined) riskInput.value = data.risk_percent;
+        // Security wajah se password kabhi wapis nahi aata - login field mein bas hint dikhate hain
+        if (loginInput) loginInput.placeholder = "Connected: " + (data.mt5_login_masked || "***");
+        if (passwordInput) passwordInput.placeholder = "Saved (badalna ho to naya likhein)";
+    } else {
+        statusDot.classList.remove("active");
+        statusText.innerText = "Disconnected";
+        if (btnDisconnect) btnDisconnect.style.display = "none";
+        if (data.connected && loginInput) {
+            loginInput.placeholder = "Pehle connected tha: " + (data.mt5_login_masked || "***");
+        }
+    }
+}
+
+async function disconnectMT5() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    const confirmed = confirm("Kya aap MT5 account disconnect karna chahte hain? Auto-trading ruk jayegi.");
+    if (!confirmed) return;
+
+    const connectMsg = document.getElementById("connect-message");
+
+    try {
+        const res = await fetch(BACKEND_URL + "/api/disconnect-mt5", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: user.uid })
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+            connectMsg.style.color = "#ff5252";
+            connectMsg.innerText = result.message || "MT5 account disconnect ho gaya.";
+            refreshConnectionStatus(user.uid);
+        } else {
+            connectMsg.style.color = "#ff5252";
+            connectMsg.innerText = "Error: " + (result.error || "Unknown error");
+        }
+    } catch (err) {
+        console.error("Disconnect error:", err);
+        connectMsg.innerText = "Disconnect fail ho gaya, dobara try karein.";
+    }
 }
 
 // ================= LIVE TRADES POLLING (new, does not affect login/connect) =================
@@ -232,6 +312,7 @@ async function connectMT5() {
             statusText.innerText = "Connected & Active";
             connectMsg.style.color = "#00c853";
             connectMsg.innerText = result.message || "Account Connect ho gaya hai! Auto Trading active hai.";
+            refreshConnectionStatus(user.uid);
         } else {
             statusText.innerText = "Connection Failed";
             connectMsg.style.color = "#ff5252";
