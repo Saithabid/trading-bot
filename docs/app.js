@@ -135,7 +135,7 @@ function initDashboard(user) {
     startTradesPolling(user.uid);
 }
 
-// ================= CONNECTION STATUS (new - survives refresh/logout) =================
+// ================= CONNECTION STATUS (survives refresh/logout) =================
 async function refreshConnectionStatus(userId) {
     try {
         const res = await fetch(BACKEND_URL + "/api/user-status?user_id=" + encodeURIComponent(userId));
@@ -154,6 +154,9 @@ function applyConnectionStatus(data) {
     const serverInput = document.getElementById("mt5_server");
     const symbolSelect = document.getElementById("symbol");
     const riskInput = document.getElementById("risk_percent");
+    const rewardRatioInput = document.getElementById("reward_ratio");
+    const lotSizeInput = document.getElementById("lot_size");
+    const strategySelect = document.getElementById("strategy");
     const loginInput = document.getElementById("mt5_login");
     const passwordInput = document.getElementById("mt5_password");
 
@@ -164,6 +167,9 @@ function applyConnectionStatus(data) {
         if (serverInput) serverInput.value = data.mt5_server || serverInput.value;
         if (symbolSelect && data.symbol) symbolSelect.value = data.symbol;
         if (riskInput && data.risk_percent !== undefined) riskInput.value = data.risk_percent;
+        if (rewardRatioInput && data.reward_ratio !== undefined) rewardRatioInput.value = data.reward_ratio;
+        if (lotSizeInput && data.lot_size !== undefined && data.lot_size !== null) lotSizeInput.value = data.lot_size;
+        if (strategySelect && data.strategy) strategySelect.value = data.strategy;
         // Security wajah se password kabhi wapis nahi aata - login field mein bas hint dikhate hain
         if (loginInput) loginInput.placeholder = "Connected: " + (data.mt5_login_masked || "***");
         if (passwordInput) passwordInput.placeholder = "Saved (badalna ho to naya likhein)";
@@ -181,10 +187,12 @@ async function disconnectMT5() {
     const user = firebase.auth().currentUser;
     if (!user) return;
 
-    const confirmed = confirm("Kya aap MT5 account disconnect karna chahte hain? Auto-trading ruk jayegi.");
+    const confirmed = confirm("Kya aap MT5 account disconnect karna chahte hain? Auto-trading ruk jayegi aur MetaApi account bhi band ho jayega.");
     if (!confirmed) return;
 
     const connectMsg = document.getElementById("connect-message");
+    connectMsg.style.color = "#ff5252";
+    connectMsg.innerText = "Disconnect ho raha hai...";
 
     try {
         const res = await fetch(BACKEND_URL + "/api/disconnect-mt5", {
@@ -208,7 +216,7 @@ async function disconnectMT5() {
     }
 }
 
-// ================= LIVE TRADES POLLING (new, does not affect login/connect) =================
+// ================= LIVE TRADES POLLING =================
 let tradesPollTimer = null;
 
 function startTradesPolling(userId) {
@@ -287,13 +295,18 @@ async function connectMT5() {
         return;
     }
 
+    const lotSizeRaw = document.getElementById("lot_size").value;
+
     const payload = {
         user_id: user.uid,
         mt5_login: document.getElementById("mt5_login").value,
         mt5_password: document.getElementById("mt5_password").value,
         mt5_server: document.getElementById("mt5_server").value,
         symbol: document.getElementById("symbol").value,
-        risk_percent: document.getElementById("risk_percent").value
+        risk_percent: document.getElementById("risk_percent").value,
+        reward_ratio: document.getElementById("reward_ratio").value,
+        strategy: document.getElementById("strategy").value,
+        lot_size: lotSizeRaw === "" ? null : lotSizeRaw
     };
 
     statusText.innerText = "Connecting...";
