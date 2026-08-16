@@ -84,27 +84,42 @@
                             </select>
                         </div>
                         <div class="input-group">
-                            <label>Risk % (SL distance)</label>
-                            <input type="number" id="risk_percent" value="1.0" step="0.1" min="0.1" max="10">
+                            <label>Timeframe</label>
+                            <select id="timeframe">
+                                <option value="1m">1 Minute</option>
+                                <option value="5m">5 Minutes</option>
+                                <option value="15m" selected>15 Minutes</option>
+                                <option value="30m">30 Minutes</option>
+                                <option value="1h">1 Hour</option>
+                                <option value="4h">4 Hours</option>
+                            </select>
                         </div>
                     </div>
                     <div class="input-row">
                         <div class="input-group">
+                            <label>Risk % (SL distance)</label>
+                            <input type="number" id="risk_percent" value="1.0" step="0.1" min="0.1" max="10">
+                        </div>
+                        <div class="input-group">
                             <label>Reward Ratio (TP = SL &times; ratio)</label>
                             <input type="number" id="reward_ratio" value="2" step="0.1" min="0.5" max="10">
                         </div>
+                    </div>
+                    <div class="input-row">
                         <div class="input-group">
                             <label>Lot Size (khali chorain = auto)</label>
                             <input type="number" id="lot_size" placeholder="Auto" step="0.01" min="0.01">
                         </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Trading Strategy (optional)</label>
-                        <select id="strategy">
-                            <option value="auto">Auto (safe default - Moving Average)</option>
-                            <option value="ma_crossover">Moving Average Crossover</option>
-                            <option value="rsi">RSI Reversal</option>
-                        </select>
+                        <div class="input-group">
+                            <label>Trading Strategy (optional)</label>
+                            <select id="strategy">
+                                <option value="auto">Auto (safe default - Moving Average)</option>
+                                <option value="ma_crossover">Moving Average Crossover</option>
+                                <option value="rsi">RSI Reversal</option>
+                                <option value="ict">ICT (Michael J. Huddleston)</option>
+                                <option value="wyckoff">Wyckoff Method (Richard D. Wyckoff)</option>
+                            </select>
+                        </div>
                     </div>
                     <button type="submit" id="btnConnect" class="btn-primary">
                         <i class="fa-solid fa-plug"></i> Connect & Start Auto-Trade
