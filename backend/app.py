@@ -15,7 +15,7 @@ from firebase_client import (
     disconnect_user_mt5,
     get_user_login_server,
 )
-from metaapi_engine import run_for_user, run_disconnect
+from metaapi_engine import run_for_user, run_disconnect, ALLOWED_TIMEFRAMES
 
 app = Flask(__name__)
 CORS(app)
@@ -45,6 +45,10 @@ def connect_mt5():
         except (TypeError, ValueError):
             return jsonify({"error": "Lot size ek number hona chahiye"}), 400
 
+    timeframe = data.get("timeframe", "15m")
+    if timeframe not in ALLOWED_TIMEFRAMES:
+        return jsonify({"error": f"Timeframe in mein se hona chahiye: {ALLOWED_TIMEFRAMES}"}), 400
+
     save_user_mt5_details(
         user_id=data["user_id"],
         mt5_login=data["mt5_login"],
@@ -55,6 +59,7 @@ def connect_mt5():
         reward_ratio=data.get("reward_ratio", 2.0),
         strategy=data.get("strategy", "auto"),
         lot_size=lot_size,
+        timeframe=timeframe,
     )
     return jsonify({"message": "MT5 account jorh diya gaya"})
 
@@ -111,7 +116,8 @@ def run_cycle():
     ke andar chalta hai jab ye endpoint hit hota hai.
 
     signal_type ab hardcoded nahi - har user ki apni chuni hui strategy
-    (ya "auto") market data dekh kar khud BUY/SELL/skip decide karti hai.
+    (aur apna chuna hua timeframe) market data dekh kar khud BUY/SELL/skip
+    decide karti hai.
     """
     if request.headers.get("X-Cron-Secret") != CRON_SECRET:
         return jsonify({"error": "unauthorized"}), 403
