@@ -153,6 +153,7 @@ function applyConnectionStatus(data) {
     const btnDisconnect = document.getElementById("btnDisconnect");
     const serverInput = document.getElementById("mt5_server");
     const symbolSelect = document.getElementById("symbol");
+    const timeframeSelect = document.getElementById("timeframe");
     const riskInput = document.getElementById("risk_percent");
     const rewardRatioInput = document.getElementById("reward_ratio");
     const lotSizeInput = document.getElementById("lot_size");
@@ -166,6 +167,7 @@ function applyConnectionStatus(data) {
         if (btnDisconnect) btnDisconnect.style.display = "block";
         if (serverInput) serverInput.value = data.mt5_server || serverInput.value;
         if (symbolSelect && data.symbol) symbolSelect.value = data.symbol;
+        if (timeframeSelect && data.timeframe) timeframeSelect.value = data.timeframe;
         if (riskInput && data.risk_percent !== undefined) riskInput.value = data.risk_percent;
         if (rewardRatioInput && data.reward_ratio !== undefined) rewardRatioInput.value = data.reward_ratio;
         if (lotSizeInput && data.lot_size !== undefined && data.lot_size !== null) lotSizeInput.value = data.lot_size;
@@ -303,6 +305,7 @@ async function connectMT5() {
         mt5_password: document.getElementById("mt5_password").value,
         mt5_server: document.getElementById("mt5_server").value,
         symbol: document.getElementById("symbol").value,
+        timeframe: document.getElementById("timeframe").value,
         risk_percent: document.getElementById("risk_percent").value,
         reward_ratio: document.getElementById("reward_ratio").value,
         strategy: document.getElementById("strategy").value,
