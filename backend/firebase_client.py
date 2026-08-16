@@ -33,7 +33,8 @@ def get_active_users():
 
 
 def save_user_mt5_details(user_id, mt5_login, mt5_password, mt5_server, symbol="EURUSD",
-                           risk_percent=1.0, reward_ratio=2.0, strategy="auto", lot_size=None):
+                           risk_percent=1.0, reward_ratio=2.0, strategy="auto",
+                           lot_size=None, timeframe="15m"):
     db = init_firebase()
     data = {
         "mt5_login": int(mt5_login),
@@ -43,6 +44,7 @@ def save_user_mt5_details(user_id, mt5_login, mt5_password, mt5_server, symbol="
         "risk_percent": risk_percent,
         "reward_ratio": reward_ratio,
         "strategy": strategy,
+        "timeframe": timeframe,
         "active": True,
     }
     # lot_size optional hai - khali chorne par field hi save nahi hoti,
@@ -95,6 +97,7 @@ def get_user_status(user_id):
         "reward_ratio": data.get("reward_ratio", 2.0),
         "strategy": data.get("strategy", "auto"),
         "lot_size": data.get("lot_size"),
+        "timeframe": data.get("timeframe", "15m"),
         "active": data.get("active", True),
     }
 
